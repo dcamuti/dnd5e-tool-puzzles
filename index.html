@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enigmi e Rompicapi D&D 5E</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&display=swap');
+:root{
+  --bg:#16100b; --border:#4a3826; --gold:#c9a227; --gold-l:#eccb62;
+  --ink:#ece2d0; --muted:#a89878; --red:#8b2e2e; --green:#5a8a5a;
+  --font-display:'Cinzel',Georgia,serif;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{color:var(--ink); font-family:Georgia,'Times New Roman',serif; min-height:100vh;
+  background:
+   radial-gradient(1200px 500px at 50% -10%, #2c2114 0%, transparent 60%),
+   radial-gradient(900px 600px at 110% 110%, #241a10 0%, transparent 55%),
+   var(--bg);
+  background-attachment:fixed}
+::selection{background:var(--red); color:#fff}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:#1a1410}::-webkit-scrollbar-thumb{background:#4a3826;border-radius:6px}
+.app-header{background:linear-gradient(180deg,#2c2013,#191209 90%); border-bottom:1px solid #6a521f; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; position:relative}
+.app-header::after{content:""; position:absolute; left:0; right:0; bottom:-5px; height:3px; background:linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold-l) 50%, var(--gold) 80%, transparent); opacity:.55}
+.app-header h1{font-family:var(--font-display); font-size:1.45rem; color:var(--gold-l); letter-spacing:2px}
+.app-header h1 small{display:block; font-family:Georgia,serif; font-size:.72rem; color:var(--muted); letter-spacing:3px; margin-top:3px; text-transform:uppercase; font-weight:normal}
+.btn{background:linear-gradient(180deg,#332818,#261d11); color:var(--ink); border:1px solid var(--border); border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-weight:600; font-size:.88rem; cursor:pointer; transition:all .18s}
+.btn:hover{border-color:var(--gold); color:var(--gold-l)}
+.btn.gold{background:linear-gradient(180deg,#d4ab35,#8f6f1a); border-color:var(--gold-l); color:#1a1206; font-weight:700}
+.btn.gold:hover{filter:brightness(1.12)}
+.btn.small{padding:5px 12px; font-size:.75rem}
+.sep{display:inline-block; vertical-align:middle; width:1px; height:24px; background:var(--border); margin:0 4px}
+.suite-nav{max-width:1100px; margin:14px auto -8px; padding:0 20px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.suite-nav .sn-lbl{font-family:var(--font-display); font-size:.68rem; letter-spacing:2px; color:var(--muted)}
+.suite-nav a{background:linear-gradient(180deg,#2c2216,#241b10); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:.8rem; color:var(--ink); text-decoration:none; font-family:var(--font-display); transition:all .15s}
+.suite-nav a:hover{border-color:var(--gold); color:var(--gold-l)}
+.suite-nav a.on{background:linear-gradient(180deg,#a13636,#7a2626); border-color:#c95454; color:#fff; pointer-events:none}
+main{max-width:1100px; margin:0 auto; padding:24px 20px}
+.tabbar{display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap}
+.tabbar .tab{flex:1; min-width:120px; text-align:center; padding:10px 4px; background:linear-gradient(180deg,#241b11,#1d150c); border:1px solid var(--border); border-radius:8px; font-family:var(--font-display); color:var(--muted); cursor:pointer; font-size:.85rem; transition:all .18s}
+.tabbar .tab:hover{border-color:var(--gold); color:var(--gold-l)}
+.tabbar .tab.active{background:linear-gradient(180deg,#a13636,#7a2626); color:#fff; border-color:#c95454}
+.panel{background:linear-gradient(170deg,#241b12,#1e160d); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 10px 34px rgba(0,0,0,.45)}
+.panel h2{font-family:var(--font-display); color:var(--gold-l); font-size:1.2rem; margin-bottom:4px}
+.panel h2::after{content:""; display:block; width:64px; height:2px; margin-top:6px; background:linear-gradient(90deg,var(--gold),transparent)}
+.panel .hint{color:var(--muted); font-size:.85rem; margin:8px 0 12px; line-height:1.5}
+input[type=text],input[type=number],select,textarea{background:#1a130b; color:var(--ink); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-family:inherit; font-size:.92rem}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,162,39,.15)}
+textarea{width:100%; min-height:80px; resize:vertical; line-height:1.5}
+label.fld{display:inline-block; margin:0 14px 12px 0; vertical-align:top}
+label.fld span{display:block; font-size:.7rem; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:1.5px; font-family:var(--font-display)}
+.toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center}
+.chip{display:inline-block; background:linear-gradient(180deg,#2c2216,#241b10); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:.82rem; cursor:pointer; margin:0 6px 6px 0; user-select:none}
+.chip:hover{border-color:var(--gold); color:var(--gold-l)}
+.chip.sel{background:linear-gradient(180deg,#a13636,#7a2626); border-color:#c95454; color:#fff}
+/* handout pergamena */
+.scroll-out{background:radial-gradient(700px 300px at 50% -5%, #fffdf4 0%, transparent 65%), linear-gradient(160deg,#f9f4e6,#f1e9d4);
+  color:#241e14; border:1px solid #c9b88f; border-radius:6px; padding:26px 30px; font-family:Georgia,serif;
+  box-shadow:0 12px 44px rgba(0,0,0,.6), inset 0 0 0 3px #f9f4e6, inset 0 0 0 4px #b09a6a, inset 0 0 60px rgba(140,110,60,.10); position:relative; margin-top:14px}
+.scroll-out::before,.scroll-out::after{content:"❧"; position:absolute; color:#a08040; font-size:1.1rem; opacity:.7}
+.scroll-out::before{top:8px; left:14px}
+.scroll-out::after{bottom:8px; right:14px; transform:rotate(180deg)}
+.scroll-out h3{font-family:'Cinzel Decorative','Cinzel',Georgia,serif; color:#8b2e2e; font-size:1.3rem; margin-bottom:8px; text-align:center}
+.scroll-out .body{font-size:1.05rem; line-height:1.7; text-align:center; white-space:pre-wrap; word-break:break-word}
+.scroll-out .cipher{font-family:'Courier New',monospace; letter-spacing:2px; font-size:1.05rem}
+.scroll-out .glyphs{font-size:1.6rem; letter-spacing:5px; line-height:2}
+.scroll-out .note{font-size:.8rem; color:#6b5636; text-align:center; margin-top:12px; font-style:italic}
+.dm-box{background:linear-gradient(160deg,#2a2013,#231a0e); border:1px solid var(--border); border-left:3px solid var(--red); border-radius:9px; padding:12px 14px; margin-top:12px; font-size:.9rem; line-height:1.6}
+.dm-box b{color:var(--gold-l)}
+.dm-box .sol{color:var(--green); font-weight:bold}
+.mono{font-family:'Courier New',monospace}
+table.leg{border-collapse:collapse; margin-top:8px}
+table.leg td{border:1px solid #c9b88f; padding:3px 8px; text-align:center; font-size:.9rem}
+table.leg td.g{font-size:1.15rem; color:#8b2e2e}
+/* griglie */
+.grid-p{display:inline-block; border:2px solid #8a744c; background:#f3ead2; padding:4px}
+.grid-p .row{display:flex}
+.grid-p .cell{width:34px; height:34px; border:1px solid #c9b88f; display:flex; align-items:center; justify-content:center; font-size:1rem; color:#4a3f2e; background:#faf5e6}
+.grid-p .cell.safe{background:#dfeeda}
+.grid-p .cell.start{background:#e8dcc0; font-weight:bold}
+.maze{display:inline-block; background:#f3ead2; padding:6px; border:2px solid #8a744c; line-height:0}
+.maze .mrow{display:flex}
+.maze .mc{width:22px; height:22px; box-sizing:border-box; background:#faf5e6}
+.maze .mc.w{background:#4a3f2e}
+.maze .mc.p{background:#dfeeda}
+.maze .mc.s{background:#c9a227}
+.maze .mc.e{background:#8b2e2e}
+/* modalità schermo intero */
+#showMode{display:none; position:fixed; inset:0; z-index:100; background:#0d0906; padding:40px; overflow:auto; align-items:center; justify-content:center}
+#showMode .inner{max-width:1000px; width:100%}
+#showMode .scroll-out{padding:44px 50px}
+#showMode .scroll-out h3{font-size:2rem}
+#showMode .scroll-out .body{font-size:1.6rem; line-height:1.8}
+#showMode .scroll-out .glyphs{font-size:2.4rem; letter-spacing:8px}
+#showMode .closebar{text-align:right; margin-bottom:14px}
+#riddleList .rd{background:linear-gradient(160deg,#2a2013,#231a0e); border:1px solid var(--border); border-radius:9px; padding:12px 14px; margin-bottom:8px}
+#riddleList .rd .q{font-size:.98rem; line-height:1.5}
+#riddleList .rd .meta{color:var(--muted); font-size:.75rem; margin-top:6px}
+#savedList .row{display:flex; gap:8px; align-items:center; background:linear-gradient(160deg,#2a2013,#231a0e); border:1px solid var(--border); border-radius:9px; padding:8px 12px; margin-bottom:7px}
+.xbtn{cursor:pointer; color:var(--muted)}
+.xbtn:hover{color:#e07a7a}
+#toastBox{position:fixed; left:50%; transform:translateX(-50%); bottom:24px; z-index:120; background:linear-gradient(180deg,#3d2f1b,#2e2312); border:1px solid var(--gold); color:var(--gold-l); padding:9px 22px; border-radius:24px; font-family:var(--font-display); font-size:.85rem; opacity:0; pointer-events:none; transition:opacity .25s}
+#toastBox.show{opacity:1}
+@media print{
+  body{background:#fff}
+  .app-header,.suite-nav,.tabbar,.panel,.toolbar,#showMode,#toastBox,.dm-box{display:none !important}
+  #printArea{display:block !important}
+  .scroll-out{box-shadow:none; break-inside:avoid; margin-bottom:20px}
+  body.printdm .dm-box{display:block !important; border:1px solid #999; color:#222; background:#fff}
+}
+#printArea{display:none}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <h1>🔐 Enigmi e Rompicapi <small>Cifrari · Rune · Indovinelli · Logica · Griglie</small></h1>
+  <div>
+    <button class="btn" onclick="openSaved()">📂 Enigmi salvati</button>
+    <span class="sep"></span>
+    <button class="btn" onclick="doPrint(false)">🖨 Stampa handout</button>
+    <button class="btn" onclick="doPrint(true)">🖨 Stampa con soluzione</button>
+    <span class="sep"></span>
+    <button class="btn gold" onclick="showPlayers()">📺 Mostra ai giocatori</button>
+  </div>
+</header>
+<nav class="suite-nav">
+  <span class="sn-lbl">SUITE D&amp;D 5E</span>
+  <a href="https://dcamuti.github.io/dnd5e-tool-characters/">⚔️ Schede PG</a>
+  <a href="https://dcamuti.github.io/dnd5e-tool-npcs/">🎭 NPC</a>
+  <a href="https://dcamuti.github.io/dnd5e-tool-encounters/">🐉 Incontri</a>
+  <a href="https://dcamuti.github.io/dnd5e-tool-journal/">📖 Diario</a>
+  <a class="on" href="https://dcamuti.github.io/dnd5e-tool-puzzles/">🔐 Enigmi</a>
+</nav>
+<main>
+  <div class="tabbar">
+    <div class="tab active" id="tab-cif" onclick="showTab('cif')">🔐 Cifrari</div>
+    <div class="tab" id="tab-run" onclick="showTab('run')">ᚱ Rune</div>
+    <div class="tab" id="tab-rid" onclick="showTab('rid')">🗝 Indovinelli</div>
+    <div class="tab" id="tab-log" onclick="showTab('log')">🧠 Logica</div>
+    <div class="tab" id="tab-ser" onclick="showTab('ser')">🔢 Serrature</div>
+    <div class="tab" id="tab-gri" onclick="showTab('gri')">▦ Griglie</div>
+    <div class="tab" id="tab-ana" onclick="showTab('ana')">🔤 Parole</div>
+  </div>
+
+  <!-- CIFRARI -->
+  <div id="view-cif">
+    <div class="panel">
+      <h2>🔐 Cifratore di messaggi</h2>
+      <div class="hint">Scrivi il messaggio in chiaro e scegli il metodo: ottieni l'handout cifrato per i giocatori e, sotto, chiave e indizio da disseminare nell'avventura.</div>
+      <label class="fld" style="display:block;margin-right:0"><span>Messaggio in chiaro</span>
+        <textarea id="cText" oninput="doCipher()">La chiave giace sotto la terza statua del corvo</textarea></label>
+      <label class="fld"><span>Metodo</span><select id="cMode" onchange="doCipher()">
+        <option value="caesar">Cifrario di Cesare (scorrimento)</option>
+        <option value="atbash">Atbash (alfabeto rovesciato)</option>
+        <option value="vigenere">Vigenère (parola chiave)</option>
+        <option value="subst">Sostituzione casuale</option>
+        <option value="acro">Acrostico (messaggio nelle iniziali)</option>
+        <option value="mirror">Testo speculare</option>
+        <option value="skip">Lettere intercalate</option>
+        <option value="num">Numerico (A=1, B=2…)</option>
+      </select></label>
+      <label class="fld" id="wKey"><span>Chiave</span><input type="text" id="cKey" value="3" size="12" oninput="doCipher()"></label>
+      <label class="fld"><span>Titolo dell'handout</span><input type="text" id="cTitle" value="Pergamena cifrata" oninput="doCipher()"></label>
+      <div class="toolbar">
+        <button class="btn small" onclick="randKey()">🎲 Chiave casuale</button>
+        <button class="btn small" onclick="savePz()">💾 Salva enigma</button>
+        <button class="btn small" onclick="toDiary()">📖 Nel diario</button>
+        <button class="btn small" onclick="shareCur()">🔗 Link</button>
+      </div>
+      <div id="cOut"></div>
+    </div>
+  </div>
+
+  <!-- RUNE -->
+  <div id="view-run" style="display:none">
+    <div class="panel">
+      <h2>ᚱ Alfabeti fantastici</h2>
+      <div class="hint">Trasforma il messaggio in glifi: i giocatori vedono l'iscrizione, tu tieni la legenda. La stessa mappa può valere per tutta la campagna (usa un seme fisso) o essere unica per ogni reperto.</div>
+      <label class="fld" style="display:block;margin-right:0"><span>Testo dell'iscrizione</span>
+        <textarea id="rText" oninput="doRunes()">Solo chi rinuncia alla luce potra vedere</textarea></label>
+      <label class="fld"><span>Alfabeto</span><select id="rSet" onchange="doRunes()">
+        <option value="run">Runico (nanico)</option>
+        <option value="arc">Arcano (simboli)</option>
+        <option value="drk">Glifi oscuri</option>
+        <option value="ogh">Silvano (linee)</option>
+      </select></label>
+      <label class="fld"><span>Seme della mappa</span><input type="number" id="rSeed" value="7" style="width:90px" oninput="doRunes()"></label>
+      <label class="fld"><span>Legenda per i giocatori</span><select id="rLeg" onchange="doRunes()">
+        <option value="no">Nascosta (solo DM)</option>
+        <option value="part">Parziale (5 lettere note)</option>
+        <option value="si">Completa (decifrabile)</option>
+      </select></label>
+      <div class="toolbar">
+        <button class="btn small" onclick="$('rSeed').value=1+Math.floor(Math.random()*999);doRunes()">🎲 Nuova mappa</button>
+        <button class="btn small" onclick="savePz()">💾 Salva enigma</button>
+        <button class="btn small" onclick="toDiary()">📖 Nel diario</button>
+      </div>
+      <div id="rOut"></div>
+    </div>
+  </div>
+
+  <!-- INDOVINELLI -->
+  <div id="view-rid" style="display:none">
+    <div class="panel">
+      <h2>🗝 Indovinelli</h2>
+      <div class="hint">Indovinelli pronti per sfingi, porte guardiane e spiriti custodi: ognuno con risposta, due indizi progressivi e la CD suggerita per chi vuole tirare invece di ragionare.</div>
+      <label class="fld"><span>Tema</span><select id="qTheme" onchange="renderRiddles()"><option value="">Tutti</option></select></label>
+      <label class="fld"><span>Difficoltà</span><select id="qDiff" onchange="renderRiddles()"><option value="">Tutte</option><option value="facile">Facile</option><option value="media">Media</option><option value="difficile">Difficile</option></select></label>
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn gold" onclick="pickRiddle()">🎲 Pescane uno</button>
+      </div>
+      <div id="rdOut"></div>
+      <div id="riddleList" style="margin-top:16px;max-height:420px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- LOGICA -->
+  <div id="view-log" style="display:none">
+    <div class="panel">
+      <h2>🧠 Enigmi di logica</h2>
+      <div class="hint">Generati con soluzione verificata: il tool controlla che la risposta esista e sia unica, così non ti ritrovi a improvvisare al tavolo.</div>
+      <label class="fld"><span>Tipo</span><select id="lType">
+        <option value="guard">Guardiani mentitori (porte)</option>
+        <option value="coin">Monete e bilancia</option>
+        <option value="seq">Sequenza da completare</option>
+        <option value="hat">Cappelli e prigionieri</option>
+        <option value="cross">Attraversare il ponte (tempo)</option>
+      </select></label>
+      <label class="fld"><span>Difficoltà</span><select id="lDiff">
+        <option value="1">Facile</option><option value="2" selected>Media</option><option value="3">Difficile</option>
+      </select></label>
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn gold" onclick="genLogic()">🎲 Genera enigma</button>
+        <button class="btn small" onclick="savePz()">💾 Salva</button>
+        <button class="btn small" onclick="toDiary()">📖 Nel diario</button>
+      </div>
+      <div id="lOut"></div>
+    </div>
+  </div>
+
+  <!-- SERRATURE -->
+  <div id="view-ser" style="display:none">
+    <div class="panel">
+      <h2>🔢 Serrature a combinazione</h2>
+      <div class="hint">Scegli (o tira) la combinazione: il tool produce gli indizi tematici da nascondere nelle stanze, uno per cifra. Ogni indizio è una frase d'ambientazione che codifica un numero.</div>
+      <label class="fld"><span>Cifre</span><select id="sN"><option>3</option><option selected>4</option><option>5</option></select></label>
+      <label class="fld"><span>Combinazione (vuoto = casuale)</span><input type="text" id="sCode" placeholder="es. 4271" size="10"></label>
+      <label class="fld"><span>Stile degli indizi</span><select id="sStyle">
+        <option value="nat">Naturale (lune, stagioni, venti)</option>
+        <option value="rel">Religioso (divinità, riti)</option>
+        <option value="mac">Macabro (ossa, tombe)</option>
+      </select></label>
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn gold" onclick="genLock()">🎲 Genera serratura</button>
+        <button class="btn small" onclick="savePz()">💾 Salva</button>
+        <button class="btn small" onclick="toDiary()">📖 Nel diario</button>
+      </div>
+      <div id="sOut"></div>
+    </div>
+  </div>
+
+  <!-- GRIGLIE -->
+  <div id="view-gri" style="display:none">
+    <div class="panel">
+      <h2>▦ Griglie e labirinti</h2>
+      <div class="hint">Piastrelle a pressione con un solo percorso sicuro, oppure un labirinto: stampa la versione per i giocatori (muta) e tieni quella con la soluzione.</div>
+      <label class="fld"><span>Tipo</span><select id="gType">
+        <option value="tiles">Piastrelle a pressione</option>
+        <option value="maze">Labirinto</option>
+      </select></label>
+      <label class="fld"><span>Dimensione</span><select id="gSize">
+        <option value="5">Piccola</option><option value="7" selected>Media</option><option value="9">Grande</option>
+      </select></label>
+      <label class="fld"><span>Simboli sulle piastrelle</span><select id="gSym">
+        <option value="run">Rune</option><option value="ele">Elementi</option><option value="ani">Animali</option>
+      </select></label>
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn gold" onclick="genGrid()">🎲 Genera</button>
+        <button class="btn small" onclick="savePz()">💾 Salva</button>
+      </div>
+      <div id="gOut"></div>
+    </div>
+  </div>
+
+  <!-- PAROLE -->
+  <div id="view-ana" style="display:none">
+    <div class="panel">
+      <h2>🔤 Giochi di parole</h2>
+      <div class="hint">Nascondi una parola chiave dentro una frase d'ambientazione, o trasformala in un anagramma da sciogliere.</div>
+      <label class="fld"><span>Parola o frase da nascondere</span><input type="text" id="aWord" value="CORVO" size="24" oninput="doWords()"></label>
+      <label class="fld"><span>Metodo</span><select id="aMode" onchange="doWords()">
+        <option value="anag">Anagramma</option>
+        <option value="acro">Acrostico (iniziali dei versi)</option>
+        <option value="hide">Nascosta nel testo (lettere consecutive)</option>
+        <option value="pal">Verso palindromo-simmetrico</option>
+      </select></label>
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn small" onclick="doWords()">🎲 Rigenera</button>
+        <button class="btn small" onclick="savePz()">💾 Salva</button>
+        <button class="btn small" onclick="toDiary()">📖 Nel diario</button>
+      </div>
+      <div id="aOut"></div>
+    </div>
+  </div>
+</main>
+
+<div id="showMode" onclick="if(event.target===this)hideShow()">
+  <div class="inner">
+    <div class="closebar"><button class="btn" onclick="hideShow()">✕ Chiudi</button></div>
+    <div id="showBody"></div>
+  </div>
+</div>
+<div id="printArea"></div>
+<div id="savedModal" onclick="if(event.target===this)closeSaved()" style="display:none;position:fixed;inset:0;background:rgba(10,7,4,.75);backdrop-filter:blur(3px);z-index:110;align-items:center;justify-content:center;padding:20px">
+  <div class="panel" style="max-width:720px;width:100%;max-height:86vh;overflow-y:auto;margin:0">
+    <h2>📂 Enigmi salvati</h2>
+    <div class="hint">Salvati nel browser. Rientrano nel backup della suite dal Diario di Campagna.</div>
+    <div id="savedList"></div>
+    <div class="toolbar">
+      <button class="btn" onclick="expPz()">⬇ Esporta JSON</button>
+      <label class="btn" style="cursor:pointer">⬆ Importa<input type="file" accept=".json" style="display:none" onchange="impPz(this)"></label>
+      <button class="btn" onclick="closeSaved()">Chiudi</button>
+    </div>
+  </div>
+</div>
+<div id="toastBox"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const R=a=>a[Math.floor(Math.random()*a.length)];
+const D=n=>Math.floor(Math.random()*n)+1;
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+function toast(m){const t=$("toastBox");t.textContent=m;t.className="show";clearTimeout(toast._t);toast._t=setTimeout(()=>t.className="",2400)}
+function ks(){const y=window.scrollY;requestAnimationFrame(()=>window.scrollTo(0,y))}
+/* generatore pseudocasuale con seme (mappe rune riproducibili) */
+function rng(seed){let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const AZ="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+/* CUR = enigma corrente: {tipo,titolo,player{html},dm{html},testo} */
+let CUR=null;
+function setCur(o){CUR=o;}
+
+/* ================= HANDOUT / VISTE ================= */
+function handout(title,bodyHtml,note,cls){
+  return`<div class="scroll-out"><h3>${esc(title)}</h3><div class="body ${cls||""}">${bodyHtml}</div>${note?`<div class="note">${note}</div>`:""}</div>`;
+}
+function dmBox(html){return`<div class="dm-box">${html}</div>`}
+function showPlayers(){
+  if(!CUR){toast("Genera prima un enigma");return}
+  $("showBody").innerHTML=CUR.player;
+  $("showMode").style.display="flex";
+}
+function hideShow(){$("showMode").style.display="none"}
+function doPrint(withSol){
+  if(!CUR){toast("Genera prima un enigma");return}
+  $("printArea").innerHTML=CUR.player+(withSol&&CUR.dm?CUR.dm:"");
+  document.body.classList.toggle("printdm",!!withSol);
+  window.print();
+  setTimeout(()=>document.body.classList.remove("printdm"),800);
+}
+
+/* ================= 1. CIFRARI ================= */
+const CIP_NOTE={
+ caesar:"Ogni lettera è stata spostata in avanti di un numero fisso di posizioni nell'alfabeto.",
+ atbash:"L'alfabeto è stato rovesciato: la prima lettera diventa l'ultima.",
+ vigenere:"Ogni lettera è spostata secondo le lettere di una parola chiave ripetuta.",
+ subst:"Ogni lettera è stata sostituita sempre con la stessa lettera diversa.",
+ acro:"Il messaggio si nasconde all'inizio di ogni verso.",
+ mirror:"Il testo va letto allo specchio.",
+ skip:"Solo alcune lettere contano: le altre sono paglia.",
+ num:"Ogni numero corrisponde alla posizione di una lettera nell'alfabeto."};
+const CLUE_HINT={
+ caesar:k=>`Un indizio per la chiave: «tante posizioni quante le ${["lune di Selûne","virtù del santo","dita di una mano","stagioni","punte della corona"][Math.min(4,(parseInt(k,10)||3)-1)]||"lune"}» (chiave = ${k}).`,
+ atbash:()=>"Nessuna chiave: l'indizio è una frase come «la fine è il principio», o uno specchio inciso sul reperto.",
+ vigenere:k=>`La parola chiave è «${k}»: nascondila come nome di una divinità, di una nave o inciso su un anello.`,
+ subst:()=>"Serve la legenda: fanne trovare una copia parziale (poche lettere) in un altro reperto.",
+ acro:()=>"Suggerisci di leggere «dall'alto in basso», o segna le iniziali con un colore diverso.",
+ mirror:()=>"Un indizio naturale: il reperto è accanto a uno specchio, o l'inchiostro traspare dal retro.",
+ skip:k=>`Conta ${k}: l'indizio può essere «una lettera su ${k}» o un pettine con ${k} denti.`,
+ num:()=>"Un abaco, un calendario o una filastrocca che conta le lettere."};
+function clean(s){return (s||"").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Z ]/g,"")}
+function caesar(s,k){k=((parseInt(k,10)||0)%26+26)%26;
+  return s.replace(/[A-Z]/g,c=>AZ[(AZ.indexOf(c)+k)%26])}
+function atbash(s){return s.replace(/[A-Z]/g,c=>AZ[25-AZ.indexOf(c)])}
+function vigenere(s,key){const k=clean(key).replace(/ /g,"")||"CHIAVE";let i=0;
+  return s.replace(/[A-Z]/g,c=>{const sh=AZ.indexOf(k[i++%k.length]);return AZ[(AZ.indexOf(c)+sh)%26]})}
+function substMap(seed){const r=rng(seed||42);const a=AZ.split("");
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  const m={};AZ.split("").forEach((c,i)=>m[c]=a[i]);return m}
+const ACRO_W=["Ascolta","Bada","Cerca","Dimentica","Eppure","Fermati","Guarda","Invoca","Lascia","Mai","Nulla","Osserva","Prendi","Quando","Ricorda","Sappi","Tieni","Ubbidisci","Vieni","Zitto","Yacht","Xilo","Kali","Jarl","Wyrm","Hai"];
+const ACRO_T=["il segno del vero cammino","ciò che la pietra non dice","la voce che tace sotto la terra","il passo che nessuno osa","l'ombra che precede la luce","quello che i vivi hanno scordato","il prezzo scritto nel sale","la porta che attende un nome"];
+function acrostic(msg){
+  const L=clean(msg).replace(/ /g,"").split("");
+  return L.map(c=>{const w=ACRO_W.find(x=>x.toUpperCase()[0]===c)||c+"ra";
+    return `${w} ${R(ACRO_T)},`}).join("\n").replace(/,$/,".");
+}
+function mirror(s){return s.split("").reverse().join("")}
+function skipCipher(s,k){
+  k=Math.max(2,parseInt(k,10)||3);
+  const L=clean(s).replace(/ /g,"").split("");const out=[];
+  const filler="AEIOULNRSTMCPDVGB";
+  L.forEach(c=>{out.push(c);for(let i=1;i<k;i++)out.push(R(filler.split("")))});
+  return out.join("");
+}
+function numCipher(s){return clean(s).split("").map(c=>c===" "?"/":AZ.indexOf(c)+1).join("-").replace(/-\/-/g," / ")}
+function randKey(){
+  const m=$("cMode").value;
+  if(m==="caesar")$("cKey").value=D(25);
+  else if(m==="vigenere")$("cKey").value=R(["CORVO","SELUNE","MYRKUL","ALBASPINA","TEMPESTA","OSSARIO"]);
+  else if(m==="subst")$("cKey").value=D(999);
+  else if(m==="skip")$("cKey").value=D(3)+1;
+  else $("cKey").value="—";
+  doCipher();
+}
+function doCipher(){
+  ks();
+  const raw=$("cText").value,m=$("cMode").value||"caesar",k=$("cKey").value,title=$("cTitle").value||"Pergamena";
+  const base=clean(raw);
+  let out="",cls="cipher",note="",dm="";
+  $("wKey").style.display=(m==="atbash"||m==="mirror"||m==="acro"||m==="num")?"none":"";
+  if(m==="caesar")out=caesar(base,k);
+  else if(m==="atbash")out=atbash(base);
+  else if(m==="vigenere")out=vigenere(base,k);
+  else if(m==="subst"){const map=substMap(parseInt(k,10)||42);out=base.replace(/[A-Z]/g,c=>map[c]);
+    dm+=`<b>Legenda:</b> <span class="mono">${AZ.split("").map(c=>c+"→"+map[c]).join("  ")}</span><br>`}
+  else if(m==="acro"){out=acrostic(raw);cls="";}
+  else if(m==="mirror")out=mirror(base);
+  else if(m==="skip")out=skipCipher(raw,k);
+  else if(m==="num"){out=numCipher(raw);cls="mono"}
+  note=CIP_NOTE[m]||"";
+  const player=handout(title,esc(out).replace(/\n/g,"<br>"),m==="acro"?"":"",cls);
+  dm=`<b>Messaggio in chiaro:</b> <span class="sol">${esc(raw)}</span><br><b>Metodo:</b> ${note}<br><b>Indizio da disseminare:</b> ${(CLUE_HINT[m]||(()=>""))(k)}<br><b>Prove suggerite:</b> Intelligenza (Indagare) CD 15 per intuire il metodo; con la chiave in mano, nessun tiro.`+ (dm?"<br>"+dm:"");
+  $("cOut").innerHTML=player+dmBox(dm);
+  setCur({tipo:"Cifrario",titolo:title,player,dm:dmBox(dm),testo:raw});
+}
+
+/* ================= 2. RUNE ================= */
+const GLYPHS={
+ run:"ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛟᛞᛢᛥ",
+ arc:"◆◇○●□■△▽▲▼☆★✦✧⬟⬢⬡✚✜✳❂⟁⟐⌘⌬⍟",
+ drk:"ϟϡϠϖϘϢϤϦϨϪϬϮϴϷϿЖЗИЛФЦЧШЩЪЭЮ",
+ ogh:"ᚁᚂᚃᚄᚅᚆᚇᚈᚉᚊᚋᚌᚍᚎᚏᚐᚑᚒᚓᚔᚕᚖᚗᚘᚙᚚ"};
+function runeMap(setKey,seed){
+  const g=GLYPHS[setKey].split("");const r=rng((seed||1)*77+setKey.length);
+  const pool=g.slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  const m={};AZ.split("").forEach((c,i)=>m[c]=pool[i%pool.length]);return m;
+}
+function doRunes(){
+  ks();
+  const txt=$("rText").value,setK=$("rSet").value||"run",seed=parseInt($("rSeed").value,10)||1,leg=$("rLeg").value||"no";
+  const map=runeMap(setK,seed);
+  const base=clean(txt);
+  const out=base.split("").map(c=>c===" "?" &nbsp; ":map[c]||c).join("");
+  let legPlayer="";
+  if(leg!=="no"){
+    const letters=AZ.split("");
+    const shown=leg==="si"?letters:letters.filter((c,i)=>[0,4,8,13,18].includes(i));
+    legPlayer=`<table class="leg" style="margin:14px auto 0"><tr>${shown.map(c=>`<td class="g">${map[c]}</td>`).join("")}</tr><tr>${shown.map(c=>`<td>${c}</td>`).join("")}</tr></table>`;
+  }
+  const title="Iscrizione antica";
+  const player=`<div class="scroll-out"><h3>${title}</h3><div class="body glyphs">${out}</div>${legPlayer}${leg==="part"?'<div class="note">Frammento di legenda ritrovato altrove</div>':""}</div>`;
+  const dm=dmBox(`<b>Testo:</b> <span class="sol">${esc(txt)}</span><br>
+   <b>Legenda completa:</b> <span style="font-size:1.1rem">${AZ.split("").map(c=>c+"="+map[c]).join("  ")}</span><br>
+   <b>Consiglio:</b> usa lo stesso seme (${seed}) per tutti i reperti della campagna: i giocatori costruiranno la legenda da soli, reperto dopo reperto.<br>
+   <b>Prove suggerite:</b> Intelligenza (Storia) CD 13 per riconoscere l'alfabeto; con la legenda parziale, Indagare CD 12 per completarla.`);
+  $("rOut").innerHTML=player+dm;
+  setCur({tipo:"Iscrizione runica",titolo:title,player,dm,testo:txt});
+}
+
+/* ================= 3. INDOVINELLI ================= */
+const RIDDLES=[
+ ["Non ho voce, eppure rispondo a chi grida. Non ho corpo, eppure vivo tra le pietre. Chi sono?","L'eco","facile","suoni",["Nasco solo se qualcuno parla per primo.","Nelle sale vuote sono più forte che altrove."]],
+ ["Più ne togli, più divento grande. Che cosa sono?","Una buca (o una fossa)","facile","terra",["Gli scavatori mi conoscono bene.","Chi mi riempie mi fa sparire."]],
+ ["Cammino tutto il giorno e resto sempre allo stesso posto. Che cosa sono?","Un orologio (o una clessidra)","media","tempo",["Ho mani ma non dita.","La mia corsa non ha destinazione, solo ritorno."]],
+ ["Chi mi fabbrica non mi usa, chi mi compra non mi vuole, chi mi usa non mi vede. Che cosa sono?","Una bara","media","morte",["Sono l'ultimo dono che si riceve.","Il legname per me si sceglie con cura, ma nessuno mi ammira."]],
+ ["Ho città senza case, foreste senza alberi e fiumi senza acqua. Che cosa sono?","Una mappa","media","viaggio",["Chi viaggia mi consulta.","Le mie montagne stanno in una mano."]],
+ ["Se mi nutri vivo, se mi dai da bere muoio. Che cosa sono?","Il fuoco","facile","elementi",["Mangio legna e respiro vento.","Nelle torce sono servo, nei boschi padrone."]],
+ ["Vengo di notte senza essere chiamato, sparisco di giorno senza essere rubato. Che cosa sono?","Le stelle (o il sonno)","facile","cielo",["Il sole è il mio nemico.","I naviganti mi seguono."]],
+ ["Sono leggero come una piuma, ma nemmeno l'uomo più forte può trattenermi a lungo. Che cosa sono?","Il respiro","media","corpo",["Ti accompagno dalla nascita.","Chi mi trattiene diventa rosso in viso."]],
+ ["Ho denti ma non mordo, ho una schiena ma non mi corico. Che cosa sono?","Un pettine","facile","oggetti",["Vivo tra i capelli.","I nobili mi vogliono d'avorio."]],
+ ["Quanto più sono vicino, tanto meno mi vedi. Che cosa sono?","Il buio (o la propria ombra alle spalle)","media","ombre",["Le torce mi cacciano.","Chi mi teme porta sempre luce con sé."]],
+ ["Non ho ali e volo, non ho occhi e piango, non ho bocca e ruggisco. Che cosa sono?","La tempesta (o la nuvola)","media","elementi",["Il mio ruggito arriva dopo la mia luce.","I contadini mi attendono e mi temono."]],
+ ["Chi mi possiede vuole tacermi, chi mi conosce vuole dirmi. Che cosa sono?","Un segreto","media","misteri",["Il mio peso non si misura in libbre.","Due possono custodirmi solo se uno è morto."]],
+ ["Passo davanti al sole ma non faccio ombra. Che cosa sono?","Il vento","difficile","elementi",["Muovo i rami senza toccarli.","Le vele mi pregano, le carovane mi maledicono."]],
+ ["Prendimi e sarò più pesante, lasciami e diventerò leggero. Le mani sudate mi conoscono. Che cosa sono?","La responsabilità (o il fardello / il secchio d'acqua)","difficile","astratto",["Chi comanda mi porta sempre.","Si può dividere, ma non regalare del tutto."]],
+ ["Il mio primo è nel corvo ma non nel falco, il mio secondo è nell'oro ma non nel ferro, il mio tutto veglia sui morti. Chi sono?","Il corvo… ossia la Regina dei Corvi (soluzione: CORVO)","difficile","enigmi",["Componi lettera per lettera.","Guarda la statua all'ingresso."]],
+ ["Nasco grande e muoio piccolo, e la mia vita si misura in luce. Che cosa sono?","Una candela","facile","oggetti",["Piango cera.","Più a lungo servo, più mi consumo."]],
+ ["Non mi puoi vedere finché non ti fermi, non mi puoi udire finché non taci. Che cosa sono?","Il silenzio","difficile","astratto",["Nelle cripte sono di casa.","Gli incantatori mi usano come arma."]],
+ ["Ho un letto ma non dormo, ho una bocca ma non parlo, corro senza gambe. Che cosa sono?","Un fiume","facile","natura",["Il mare è la mia meta.","I ponti mi scavalcano."]],
+ ["Chi lo fabbrica lo vende, chi lo compra non lo usa per sé, chi lo usa non lo sa. Che cosa sono?","Una lapide (o una bara)","media","morte",["Porto un nome che non è il mio.","Sto ritto in un giardino di pietra."]],
+ ["Divido tutto senza tagliare nulla, e più mi attraversi meno sono. Che cosa sono?","La soglia (o il tempo)","difficile","misteri",["Le porte mi hanno, i muri no.","Chi entra mi consuma."]],
+ ["Ho occhi che non vedono, un corpo che non sente, e chi mi trova spesso muore ricco. Che cosa sono?","Un teschio (o un idolo di pietra)","media","morte",["I tombaroli mi conoscono.","Le mie orbite sono vuote da secoli."]],
+ ["Sono sempre davanti a te, eppure non mi raggiungerai mai. Che cosa sono?","Il futuro (o il domani)","media","tempo",["Ogni passo che fai mi allontana di uno.","I profeti dicono di vedermi."]]];
+function initRiddles(){
+  const themes=[...new Set(RIDDLES.map(r=>r[3]))].sort();
+  $("qTheme").innerHTML='<option value="">Tutti</option>'+themes.map(t=>`<option>${t}</option>`).join("");
+  renderRiddles();
+}
+function riddleFiltered(){
+  const t=$("qTheme").value,d=$("qDiff").value;
+  return RIDDLES.filter(r=>(!t||r[3]===t)&&(!d||r[2]===d));
+}
+function renderRiddles(){
+  ks();
+  const l=riddleFiltered();
+  $("riddleList").innerHTML=l.map(r=>`<div class="rd">
+    <div class="q">«${esc(r[0])}»</div>
+    <div class="meta">Risposta: <b style="color:var(--green)">${esc(r[1])}</b> · ${r[2]} · ${r[3]}
+     <button class="btn small" style="margin-left:8px" onclick="useRiddle(${RIDDLES.indexOf(r)})">📜 Usa</button></div>
+   </div>`).join("")||'<p style="color:var(--muted)">Nessun indovinello con questi filtri.</p>';
+}
+function pickRiddle(){const l=riddleFiltered();if(!l.length)return;useRiddle(RIDDLES.indexOf(R(l)))}
+function useRiddle(i){
+  const r=RIDDLES[i];if(!r)return;
+  const title="Il custode domanda";
+  const player=handout(title,esc(r[0]).replace(/\n/g,"<br>"),"Rispondi ad alta voce.");
+  const dm=dmBox(`<b>Risposta:</b> <span class="sol">${esc(r[1])}</span><br>
+   <b>Indizio 1:</b> ${esc(r[4][0])}<br><b>Indizio 2:</b> ${esc(r[4][1])}<br>
+   <b>Difficoltà:</b> ${r[2]} · tema ${r[3]}<br>
+   <b>Prove suggerite:</b> Intelligenza CD ${r[2]==="facile"?10:r[2]==="media"?13:16} per ottenere il primo indizio; Saggezza (Intuizione) CD 12 se il custode reagisce alle risposte sbagliate.`);
+  $("rdOut").innerHTML=player+dm;
+  setCur({tipo:"Indovinello",titolo:title,player,dm,testo:r[0]});
+  window.scrollTo({top:$("rdOut").offsetTop-80,behavior:"smooth"});
+}
+
+/* ================= 4. LOGICA ================= */
+const NAMES_G=["Vashk","Oren","Malik","Tessa","Brann","Yrsa","Corin","Delia"];
+function genLogic(){
+  ks();
+  const t=$("lType").value,d=parseInt($("lDiff").value,10);
+  let title="",body="",dm="";
+  if(t==="guard"){
+    const n=d===1?2:d===2?2:3;
+    const g=[];const shuffled=[...NAMES_G].sort(()=>Math.random()-.5);
+    for(let i=0;i<n;i++)g.push({name:shuffled[i],liar:Math.random()<.5});
+    if(g.every(x=>x.liar))g[0].liar=false;
+    if(g.every(x=>!x.liar))g[0].liar=true;
+    const safe=D(n);
+    const stat=g.map((x,i)=>{
+      const claim=Math.random()<.5?`la porta ${D(n)} conduce alla salvezza`:`${g[(i+1)%n].name} dice sempre il vero`;
+      return`<b>${x.name}</b>: «${claim}»`;
+    });
+    title="I guardiani delle porte";
+    body=`Davanti a te ${n} porte identiche e ${n} guardiani di pietra.\nUno solo dei sentieri conduce oltre; gli altri alla rovina.\nOgni guardiano mente sempre oppure dice sempre il vero.\nPuoi rivolgere <b>una sola domanda</b> a <b>un solo</b> guardiano.\n\n${stat.join("\n")}`;
+    dm=`<b>Porta sicura:</b> <span class="sol">porta ${safe}</span><br>
+     <b>Chi mente:</b> ${g.map(x=>x.name+(x.liar?" (mente)":" (dice il vero)")).join(", ")}<br>
+     <b>Domanda risolutiva</b> (la classica, funziona sempre): «Se chiedessi <i>all'altro</i> guardiano quale porta è sicura, cosa risponderebbe?» → poi <b>scegli l'altra</b> porta rispetto a quella indicata.<br>
+     <b>Variante rapida:</b> «Questa porta è sicura?» posta a entrambi: se le risposte divergono, il vero risponde correttamente.<br>
+     <b>Prova alternativa:</b> Saggezza (Intuizione) CD 15 per capire chi mente; Intelligenza CD 17 per formulare la domanda corretta senza aiuto.`;
+  }else if(t==="coin"){
+    const n=d===1?8:d===2?9:12;
+    const bad=D(n);const heavier=Math.random()<.5;
+    title="Le monete del mercante";
+    body=`${n} monete d'oro identiche giacciono sul piatto.\nUna sola è falsa: pesa ${heavier?"più":"meno"} delle altre.\nHai una bilancia a due piatti e <b>${n<=9?"due":"tre"} pesate</b> soltanto.\nQuale moneta è falsa?`;
+    dm=`<b>Moneta falsa:</b> <span class="sol">la n° ${bad}</span> (${heavier?"più pesante":"più leggera"})<br>
+     <b>Soluzione:</b> dividi in tre gruppi ${n===8?"da 3, 3 e 2":n===9?"da 3":"da 4"}. Pesa i due gruppi ${n===12?"da 4":"da 3"}: se si equilibrano, la falsa è nel terzo gruppo; altrimenti è nel piatto ${heavier?"più pesante":"più leggero"}. Ripeti il procedimento sul gruppo individuato fino alla singola moneta.<br>
+     <b>Al tavolo:</b> lascia che i giocatori descrivano le pesate; tu rispondi solo «pende a destra / a sinistra / è in equilibrio».<br>
+     <b>Prova alternativa:</b> Intelligenza CD 15, oppure Saggezza (Percezione) CD 18 per notare a occhio la differenza.`;
+  }else if(t==="seq"){
+    const kind=R(["arit","geom","fib","quad","alt"]);
+    let seq=[],rule="",next=0;
+    if(kind==="arit"){const a=D(9),p=D(7)+1;seq=[a,a+p,a+2*p,a+3*p,a+4*p];next=a+5*p;rule=`si somma sempre ${p}`}
+    else if(kind==="geom"){const a=D(3),p=D(2)+1;seq=[a,a*p,a*p*p,a*p*p*p];next=a*Math.pow(p,4);rule=`si moltiplica sempre per ${p}`}
+    else if(kind==="fib"){let a=D(3),b=a+D(3);seq=[a,b];for(let i=0;i<4;i++){seq.push(seq[seq.length-1]+seq[seq.length-2])}next=seq[seq.length-1]+seq[seq.length-2];rule="ogni numero è la somma dei due precedenti"}
+    else if(kind==="quad"){const s=D(3);seq=[];for(let i=s;i<s+5;i++)seq.push(i*i);next=(s+5)*(s+5);rule="sono i quadrati dei numeri consecutivi"}
+    else{const a=D(5);seq=[a,a*2,a*2+3,(a*2+3)*2,(a*2+3)*2+3];next=seq[4]*2;rule="si alterna: ×2, poi +3"}
+    title="La sequenza incisa";
+    body=`Sull'anta di pietra sono incisi dei numeri, e un ultimo spazio vuoto:\n\n<b style="font-size:1.4rem;letter-spacing:6px">${seq.join("   ")}   ?</b>\n\nIncidi il numero mancante per aprire.`;
+    dm=`<b>Risposta:</b> <span class="sol">${next}</span><br><b>Regola:</b> ${rule}.<br>
+     <b>Indizio da dare:</b> «guarda la differenza tra un numero e il successivo».<br>
+     <b>Prove suggerite:</b> Intelligenza CD ${d===1?10:d===2?13:16}; con competenza in Arcano o Storia, vantaggio.`;
+  }else if(t==="hat"){
+    const n=d===1?3:4;
+    const colors=["nero","bianco"];
+    const worn=Array.from({length:n},()=>R(colors));
+    title="I prigionieri incappucciati";
+    body=`${n} prigionieri sono incolonnati, ciascuno rivolto verso la nuca di chi lo precede.\nOgnuno porta un cappuccio nero o bianco: vede solo quelli davanti a sé, mai il proprio.\nPartendo dall'ultimo, ognuno deve dichiarare il colore del <b>proprio</b> cappuccio.\nChi sbaglia muore. Possono accordarsi prima, ma non comunicare dopo.\nQual è la strategia che salva più prigionieri possibile?`;
+    dm=`<b>Cappucci (dal fondo alla testa):</b> <span class="sol">${worn.join(", ")}</span><br>
+     <b>Soluzione:</b> si accordano sulla <i>parità</i>. L'ultimo conta i cappucci neri che vede: dichiara «nero» se sono in numero dispari, «bianco» se pari (rischia solo lui, 50%). Ognuno dei successivi, sapendo la parità dichiarata e contando i neri davanti a sé più quelli già dichiarati, deduce con certezza il proprio colore: <b>si salvano tutti tranne, forse, il primo a parlare</b>.<br>
+     <b>Al tavolo:</b> premia con ispirazione chi arriva al concetto di parità anche senza formalizzarlo.<br>
+     <b>Prove suggerite:</b> Intelligenza CD 17 per l'intuizione; l'enigma è pensato per essere risolto parlando, non tirando.`;
+  }else{
+    const t1=D(2),t2=t1+D(3),t3=t2+D(5),t4=t3+D(8);
+    const tot=t4+t3+t2*1;
+    title="Il ponte marcio nella notte";
+    body=`Quattro viandanti devono attraversare un ponte che regge al massimo <b>due persone</b> alla volta.\nÈ notte fonda: serve la lanterna, e ce n'è una sola.\nChi attraversa in coppia procede al passo del più lento.\nI tempi sono: <b>${t1}</b>, <b>${t2}</b>, <b>${t3}</b> e <b>${t4}</b> minuti.\nRiuscite a portarli tutti dall'altra parte in <b>${tot}</b> minuti o meno?`;
+    dm=`<b>Tempi:</b> ${t1}, ${t2}, ${t3}, ${t4} minuti · <b>limite:</b> ${tot} minuti<br>
+     <b>Soluzione ottimale:</b> attraversano prima i due più veloci (${t2} min); torna il più veloce (${t1}); attraversano i due più lenti insieme (${t4}); torna il secondo più veloce (${t2}); attraversano di nuovo i due più veloci (${t2}). <span class="sol">Totale: ${t2+t1+t4+t2+t2} minuti.</span><br>
+     <b>Trappola tipica:</b> far fare la spola sempre al più veloce costa di più — falli sbagliare una volta, poi concedi un indizio.<br>
+     <b>Prove suggerite:</b> Intelligenza CD 15; se falliscono, il ponte cede al termine del tempo (TS su Destrezza CD 13, 2d6 danni da caduta).`;
+  }
+  const player=handout(title,body,"");
+  const dmH=dmBox(dm);
+  $("lOut").innerHTML=player+dmH;
+  setCur({tipo:"Enigma di logica",titolo:title,player,dm:dmH,testo:title});
+}
+
+/* ================= 5. SERRATURE ================= */
+const LOCK_CLUES={
+ nat:[["il numero delle lune che vegliano d'inverno","le stagioni che il cervo attende"],["i venti che soffiano sulla brughiera","i fiumi che nutrono la valle"],["le vette che circondano il lago","le radici del vecchio frassino"],["i corvi posati sulla quercia all'alba","le pietre erette nel cerchio"]],
+ rel:[["le virtù incise sull'altare","le campane che suonano al vespro"],["i gradini che portano al santuario","i ceri accesi per il defunto"],["le prove imposte al pellegrino","i nomi sussurrati nella cripta"],["i sigilli posti sul reliquiario","le lacrime della santa"]],
+ mac:[["le dita rimaste alla mano incatenata","i teschi allineati sulla mensola"],["le tombe senza nome nel chiostro","i chiodi conficcati nel coperchio"],["i vermi scolpiti attorno al blasone","le urne rovesciate"],["le costole spezzate dell'idolo","le orbite vuote della statua"]]};
+function genLock(){
+  ks();
+  const n=parseInt($("sN").value,10),st=$("sStyle").value;
+  let code=($("sCode").value||"").replace(/\D/g,"").slice(0,n);
+  while(code.length<n)code+=""+Math.floor(Math.random()*9+1);
+  $("sCode").value=code;
+  const rows=code.split("").map((c,i)=>{
+    const pair=LOCK_CLUES[st][i%LOCK_CLUES[st].length];
+    return{pos:i+1,cifra:c,frase:`<b>${["Prima","Seconda","Terza","Quarta","Quinta"][i]} cifra:</b> ${R(pair)} — <i>ne conterai ${c}</i>`};
+  });
+  const title="La serratura a combinazione";
+  const body=`Un cilindro di ottone con ${n} anelli numerati blocca il meccanismo.\nSotto, inciso nella pietra:\n\n<i>«Chi ha camminato queste sale conosce i numeri.\nIl luogo stesso te li dirà, se saprai contare.»</i>`;
+  const player=handout(title,body,"");
+  const dm=dmBox(`<b>Combinazione:</b> <span class="sol" style="font-size:1.3rem;letter-spacing:4px">${code}</span><br>
+   <b>Indizi da nascondere nelle stanze</b> (uno per cifra, in stanze diverse):<br>${rows.map(r=>"• "+r.frase).join("<br>")}<br>
+   <b>Come giocarla:</b> l'elemento contato deve esistere davvero nella stanza (mettici quel numero esatto di corvi, ceri, teschi…). I giocatori contano, non tirano.<br>
+   <b>Scorciatoie:</b> Intelligenza (Indagare) CD 15 per capire che gli oggetti vanno contati; Destrezza (arnesi da scasso) CD 20 per forzare; <i>knock</i> apre senza combinazione.<br>
+   <b>Fallimento:</b> alla terza combinazione errata, scatta una trappola (TS su Destrezza CD 13, 2d10 danni perforanti) o si sveglia un guardiano.`);
+  $("sOut").innerHTML=player+dm;
+  setCur({tipo:"Serratura",titolo:title,player,dm,testo:"Combinazione "+code});
+}
+
+/* ================= 6. GRIGLIE E LABIRINTI ================= */
+const SYMS={run:"ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾ",ele:"🜁🜂🜃🜄✦☾☀︎❄︎⚡︎☘︎",ani:"🐺🦅🐍🕷🦌🐗🦇🐟🦂🐎"};
+function genGrid(){
+  ks();
+  const type=$("gType").value,n=parseInt($("gSize").value,10),sy=$("gSym").value;
+  if(type==="tiles"){
+    /* percorso sicuro dal basso verso l'alto, una cella per riga, spostamento max 1 colonna */
+    const path=[];let col=Math.floor(Math.random()*n);
+    for(let r=0;r<n;r++){path.push(col);
+      const d=[-1,0,1][Math.floor(Math.random()*3)];
+      col=Math.max(0,Math.min(n-1,col+d));}
+    const syms=SYMS[sy].split("");
+    const safeSym=syms[0];
+    const cells=[];
+    for(let r=0;r<n;r++){const row=[];
+      for(let c=0;c<n;c++)row.push(path[r]===c?safeSym:R(syms.slice(1)));
+      cells.push(row);}
+    const gridHtml=(showSol)=>`<div class="grid-p">${cells.map((row,r)=>`<div class="row">${row.map((s,c)=>
+      `<div class="cell ${showSol&&path[r]===c?"safe":""}">${s}</div>`).join("")}</div>`).reverse().join("")}</div>`;
+    const title="Le piastrelle del guardiano";
+    const player=`<div class="scroll-out"><h3>${title}</h3><div class="body">Il pavimento è diviso in ${n}×${n} piastrelle incise.\nSull'architrave, una sola frase:\n<i>«Segui il segno che si ripete, e il vuoto non ti reclamerà.»</i>\n<div style="margin-top:14px">${gridHtml(false)}</div></div></div>`;
+    const dm=dmBox(`<b>Percorso sicuro</b> (dal basso in alto, colonne da sinistra): <span class="sol">${path.map(p=>p+1).join(" → ")}</span><br>
+     <div style="margin:8px 0">${gridHtml(true)}</div>
+     <b>Regola:</b> le piastrelle sicure portano tutte il simbolo <span style="font-size:1.2rem">${safeSym}</span>: è l'unico che compare una sola volta per riga.<br>
+     <b>Fallimento:</b> chi calpesta una piastrella sbagliata: TS su Destrezza CD 13 o cade nella fossa (2d6 danni da caduta) e la piastrella si richiude.<br>
+     <b>Prove suggerite:</b> Intelligenza (Indagare) CD 13 per notare il simbolo ricorrente; Saggezza (Percezione) CD 15 per vedere la polvere smossa sul percorso già usato dai custodi.`);
+    $("gOut").innerHTML=player+dm;
+    setCur({tipo:"Griglia",titolo:title,player,dm,testo:"Percorso: "+path.map(p=>p+1).join("-")});
+  }else{
+    const w=n*2+1,h=n*2+1;
+    const g=Array.from({length:h},()=>Array(w).fill(1));
+    const carve=(r,c)=>{g[r][c]=0;
+      const dirs=[[0,2],[0,-2],[2,0],[-2,0]].sort(()=>Math.random()-.5);
+      for(const[dr,dc]of dirs){const nr=r+dr,nc=c+dc;
+        if(nr>0&&nr<h-1&&nc>0&&nc<w-1&&g[nr][nc]===1){g[r+dr/2][c+dc/2]=0;carve(nr,nc)}}};
+    carve(1,1);
+    const sr=1,sc=1,er=h-2,ec=w-2;g[er][ec]=0;
+    /* soluzione BFS */
+    const prev={},q=[[sr,sc]],seen={};seen[sr+","+sc]=1;
+    while(q.length){const[r,c]=q.shift();if(r===er&&c===ec)break;
+      [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc])=>{const nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<h&&nc>=0&&nc<w&&g[nr][nc]===0&&!seen[nr+","+nc]){seen[nr+","+nc]=1;prev[nr+","+nc]=r+","+c;q.push([nr,nc])}})}
+    const sol={};let cur=er+","+ec;
+    while(cur&&cur!==sr+","+sc){sol[cur]=1;cur=prev[cur]}
+    sol[sr+","+sc]=1;
+    const mz=(showSol)=>`<div class="maze">${g.map((row,r)=>`<div class="mrow">${row.map((v,c)=>{
+      let cl=v?"w":"";
+      if(r===sr&&c===sc)cl="s";else if(r===er&&c===ec)cl="e";
+      else if(showSol&&sol[r+","+c])cl="p";
+      return`<div class="mc ${cl}"></div>`}).join("")}</div>`).join("")}</div>`;
+    const title="Il labirinto";
+    const player=`<div class="scroll-out"><h3>${title}</h3><div class="body">Dall'ingresso (oro) all'uscita (rosso).\n<div style="margin-top:12px">${mz(false)}</div></div></div>`;
+    const dm=dmBox(`<b>Soluzione:</b><div style="margin:8px 0">${mz(true)}</div>
+     <b>Al tavolo:</b> mostra ai giocatori la versione muta (📺 o stampata) e falli tracciare il percorso; oppure usalo come mappa da esplorare a vista, rivelando una stanza alla volta.<br>
+     <b>Prove suggerite:</b> Saggezza (Sopravvivenza) CD 13 per non perdere l'orientamento; ogni fallimento costa 10 minuti e un tiro per incontri casuali.`);
+    $("gOut").innerHTML=player+dm;
+    setCur({tipo:"Labirinto",titolo:title,player,dm,testo:"Labirinto "+n+"×"+n});
+  }
+}
+
+/* ================= 7. PAROLE ================= */
+const W_START=["Nel","Sotto","Oltre","Quando","Dove","Se","Chi","Prima"];
+const W_MID=["la pietra tace","l'ombra si allunga","il fuoco si spegne","la luna cala","il corvo canta","l'acqua si ferma","il sangue chiama","la porta respira"];
+function doWords(){
+  ks();
+  const raw=$("aWord").value,m=$("aMode").value||"anag";
+  const w=clean(raw).replace(/ /g,"");
+  if(!w){$("aOut").innerHTML="";return}
+  let title="",body="",dm="";
+  if(m==="anag"){
+    let a;let guard=0;
+    do{a=w.split("").sort(()=>Math.random()-.5).join("");guard++}while(a===w&&guard<50);
+    title="Le lettere sparse";
+    body=`Sul reperto, lettere incise senza ordine:\n\n<b style="font-size:1.5rem;letter-spacing:8px">${a}</b>\n\n<i>«Rimettile al loro posto e la via si aprirà.»</i>`;
+    dm=`<b>Soluzione:</b> <span class="sol">${w}</span><br><b>Indizio:</b> suggerisci la prima lettera, o che la parola è un nome di ${w.length} lettere legato al luogo.<br><b>Prova:</b> Intelligenza CD 12 (vantaggio con Storia se il nome è noto).`;
+  }else if(m==="acro"){
+    const lines=w.split("").map(c=>{
+      const s=W_START.find(x=>x.toUpperCase()[0]===c)||c+"…";
+      return`${s} ${R(W_MID)},`});
+    title="La litania incisa";
+    body=lines.join("\n").replace(/,$/,".");
+    dm=`<b>Soluzione:</b> <span class="sol">${w}</span> — si legge nelle iniziali dei versi.<br><b>Indizio:</b> incidi le iniziali in un colore diverso, o falle brillare alla luce della torcia.<br><b>Prova:</b> Intelligenza (Indagare) CD 13.`;
+  }else if(m==="hide"){
+    const pre=R(["Il custode ","La cripta di ","Oltre il varco ","Nella sala del "]);
+    const post=R([" attende chi osa"," non perdona i tardi"," ricorda ogni nome"," veglia da mille inverni"]);
+    const filler=R(["mber","ntra","sper","lito","ndra"]);
+    const sent=(pre+filler.slice(0,2)+w.toLowerCase()+filler.slice(2)+post).replace(/\s+/g," ");
+    title="La frase del custode";
+    body=`<i>«${sent}»</i>`;
+    dm=`<b>Soluzione:</b> <span class="sol">${w}</span> — le lettere compaiono consecutive dentro la frase: <span class="mono">${esc(sent).replace(new RegExp(w.toLowerCase(),"i"),"[$&]")}</span><br><b>Indizio:</b> «leggi senza respirare tra le parole».<br><b>Prova:</b> Intelligenza (Indagare) CD 15.`;
+  }else{
+    const half=w.slice(0,Math.ceil(w.length/2));
+    const pal=w+"·"+w.split("").reverse().join("");
+    title="Lo specchio di parole";
+    body=`Sull'arco, due iscrizioni gemelle:\n\n<b style="font-size:1.3rem;letter-spacing:5px">${pal}</b>\n\n<i>«Ciò che va e ciò che torna sono la stessa cosa.»</i>`;
+    dm=`<b>Soluzione:</b> <span class="sol">${w}</span> — la seconda metà è la prima letta al contrario.<br><b>Indizio:</b> uno specchio, una pozza d'acqua o un gemello nella stanza accanto.<br><b>Prova:</b> Intelligenza CD 12.<br><b>Nota:</b> per un vero palindromo usa parole come ANNA, OSSO, ITALIA→AILATI (invertita).`;
+  }
+  const player=handout(title,body,"");
+  const dmH=dmBox(dm);
+  $("aOut").innerHTML=player+dmH;
+  setCur({tipo:"Gioco di parole",titolo:title,player,dm:dmH,testo:raw});
+}
+
+/* ================= SALVATAGGIO / CONDIVISIONE ================= */
+function pzAll(){return lsGet("dnd5e_puzzles",[])}
+function savePz(){
+  if(!CUR){toast("Genera prima un enigma");return}
+  const name=prompt("Nome dell'enigma:",CUR.tipo+" — "+(CUR.testo||"").slice(0,30));
+  if(!name)return;
+  const l=pzAll();l.unshift({id:Date.now().toString(36),name,tipo:CUR.tipo,player:CUR.player,dm:CUR.dm,date:new Date().toISOString().slice(0,10)});
+  lsSet("dnd5e_puzzles",l.slice(0,60));toast("💾 Enigma salvato");
+}
+function openSaved(){
+  const l=pzAll();
+  $("savedList").innerHTML=l.length?l.map(p=>`<div class="row">
+    <span style="flex:1"><b style="color:var(--gold-l)">${esc(p.name)}</b><br><span style="color:var(--muted);font-size:.75rem">${p.tipo} · ${p.date}</span></span>
+    <button class="btn small" onclick="loadPz('${p.id}')">📜 Apri</button>
+    <span class="xbtn" onclick="delPz('${p.id}')">✕</span></div>`).join("")
+   :'<p style="color:var(--muted)">Nessun enigma salvato.</p>';
+  $("savedModal").style.display="flex";
+}
+function closeSaved(){$("savedModal").style.display="none"}
+function loadPz(id){
+  const p=pzAll().find(x=>x.id===id);if(!p)return;
+  setCur({tipo:p.tipo,titolo:p.name,player:p.player,dm:p.dm,testo:p.name});
+  closeSaved();showPlayers();
+}
+function delPz(id){if(!confirm("Eliminare questo enigma?"))return;lsSet("dnd5e_puzzles",pzAll().filter(x=>x.id!==id));openSaved()}
+function expPz(){
+  const blob=new Blob([JSON.stringify({type:"dnd5e_puzzles",data:pzAll()},null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="enigmi_dnd5e.json";a.click();
+}
+function impPz(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const d=JSON.parse(rd.result);
+    if(d.type!=="dnd5e_puzzles"||!Array.isArray(d.data))throw 0;
+    lsSet("dnd5e_puzzles",d.data.concat(pzAll()).slice(0,60));openSaved();toast("⬆ Enigmi importati");
+  }catch(e){alert("File non valido.")}};
+  rd.readAsText(f);inp.value="";
+}
+function toDiary(){
+  if(!CUR){toast("Genera prima un enigma");return}
+  const txt=`— 🔐 ${CUR.tipo}: ${CUR.titolo} —\n${(CUR.testo||"").slice(0,300)}`;
+  const DIA=lsGet("dnd5e_diary",{sessions:[],npcs:[],places:[],hooks:[]});
+  ["sessions","npcs","places","hooks"].forEach(k=>{if(!Array.isArray(DIA[k]))DIA[k]=[]});
+  if(DIA.sessions.length)DIA.sessions[0].text=(DIA.sessions[0].text?DIA.sessions[0].text+"\n\n":"")+txt;
+  else DIA.sessions.unshift({id:Date.now().toString(36),date:new Date().toISOString().slice(0,10),title:"Sessione 1",text:txt});
+  lsSet("dnd5e_diary",DIA);toast("📖 Annotato nel Diario di Campagna");
+}
+const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s))));
+function shareCur(){
+  if(!CUR)return;
+  const url=location.href.split("#")[0]+"#pz="+b64e({t:"pz",tipo:CUR.tipo,titolo:CUR.titolo,player:CUR.player});
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(()=>toast("🔗 Link copiato")).catch(()=>prompt("Copia il link:",url));
+  else prompt("Copia il link:",url);
+}
+
+/* ================= TABS / INIT ================= */
+function showTab(t){
+  ["cif","run","rid","log","ser","gri","ana"].forEach(x=>{
+    $("view-"+x).style.display=x===t?"":"none";
+    $("tab-"+x).classList.toggle("active",x===t)});
+}
+(function(){
+  doCipher();doRunes();initRiddles();doWords();
+  if(location.hash.indexOf("#pz=")===0){
+    try{const o=b64d(location.hash.slice(4));
+      if(o&&o.t==="pz"&&o.player&&confirm(`Questo link contiene l'enigma «${o.titolo}». Aprirlo a schermo intero?`)){
+        setCur({tipo:o.tipo,titolo:o.titolo,player:o.player,dm:"",testo:o.titolo});showPlayers();
+      }
+      history.replaceState(null,"",location.pathname+location.search);
+    }catch(e){}
+  }
+})();
+</script>
+</body>
+</html>
