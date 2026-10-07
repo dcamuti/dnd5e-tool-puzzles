@@ -121,6 +121,9 @@ table.leg td.g{font-size:1.15rem; color:#8b2e2e}
     <button class="btn" onclick="doPrint(true)">🖨 Stampa con soluzione</button>
     <span class="sep"></span>
     <button class="btn gold" onclick="showPlayers()">📺 Mostra ai giocatori</button>
+    <span class="sep"></span>
+    <button class="btn" onclick="backupSuite()">🗄 Backup suite</button>
+    <label class="btn" style="cursor:pointer">⬆ Ripristina backup<input type="file" accept=".json" style="display:none" onchange="if(this.files[0])restoreSuite(this.files[0]);this.value=''"></label>
   </div>
 </header>
 <nav class="suite-nav">
@@ -332,6 +335,30 @@ const R=a=>a[Math.floor(Math.random()*a.length)];
 const D=n=>Math.floor(Math.random()*n)+1;
 function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+/* ================= DATI ESTERNI (file importati, link condivisi, backup) =================
+   Tutto ciò che arriva da fuori viene ripulito prima di entrare nella suite:
+   niente markup, virgolette o entità che possano "uscire" dagli attributi HTML;
+   gli id vengono ridotti a caratteri sicuri. Solo i campi player/dm degli enigmi
+   possono contenere HTML, che passa da un filtro a lista bianca. */
+const PZ_ALLOW=true;
+const PZ_HTML_KEYS=["player","dm"];
+function cleanHtml(html){
+  try{const doc=new DOMParser().parseFromString("<body>"+(html||"")+"</body>","text/html");
+    doc.body.querySelectorAll("script,iframe,object,embed,link,meta,base,form,frame,frameset,noscript,template,style").forEach(n=>n.remove());
+    doc.body.querySelectorAll("*").forEach(el=>[...el.attributes].forEach(a=>{
+      const n=a.name.toLowerCase(),v=(a.value||"").replace(/[\s\u0000-\u001f]/g,"").toLowerCase();
+      const urlAttr=["href","src","xlink:href","action","formaction","background","poster"].includes(n);
+      if(n.startsWith("on")||n==="srcdoc"||(urlAttr&&(v.startsWith("javascript:")||v.startsWith("vbscript:")||(v.startsWith("data:")&&!v.startsWith("data:image/")))))el.removeAttribute(a.name)}));
+    return doc.body.innerHTML}catch(e){return String(html||"").replace(/[<>]/g,"")}}
+function cleanStr(v){return v.replace(/[<>]/g,"").replace(/"/g,"”").replace(/&(?=[#A-Za-z0-9])/g,"＆")}
+function safeParse(txt,allowPzHtml){
+  return JSON.parse(txt,(k,v)=>{
+    if(typeof v!=="string")return v;
+    if(allowPzHtml&&PZ_HTML_KEYS.includes(k))return cleanHtml(v);
+    if(k==="id")return v.replace(/[^\w-]/g,"");
+    return cleanStr(v)})}
+/* valore di una chiave del backup: è JSON (tranne la lingua, che è testo semplice) */
+function safeStoreVal(k,v){try{return JSON.stringify(safeParse(v,k==="dnd5e_puzzles"))}catch(e){return String(v).replace(/[^\w-]/g,"")}}
 const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function toast(m){const t=$("toastBox");t.textContent=m;t.className="show";clearTimeout(toast._t);toast._t=setTimeout(()=>t.className="",2400)}
 function ks(){const y=window.scrollY;requestAnimationFrame(()=>window.scrollTo(0,y))}
@@ -760,7 +787,7 @@ function expPz(){
 function impPz(inp){
   const f=inp.files&&inp.files[0];if(!f)return;
   const rd=new FileReader();
-  rd.onload=()=>{try{const d=JSON.parse(rd.result);
+  rd.onload=()=>{try{const d=safeParse(rd.result,PZ_ALLOW);
     if(d.type!=="dnd5e_puzzles"||!Array.isArray(d.data))throw 0;
     lsSet("dnd5e_puzzles",d.data.concat(pzAll()).slice(0,60));openSaved();toast("⬆ Enigmi importati");
   }catch(e){alert("File non valido.")}};
@@ -776,7 +803,7 @@ function toDiary(){
   lsSet("dnd5e_diary",DIA);toast("📖 Annotato nel Diario di Campagna");
 }
 const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
-const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s))));
+const b64d=s=>safeParse(decodeURIComponent(escape(atob(s))),PZ_ALLOW);
 function shareCur(){
   if(!CUR)return;
   const url=location.href.split("#")[0]+"#pz="+b64e({t:"pz",tipo:CUR.tipo,titolo:CUR.titolo,player:CUR.player});
@@ -785,6 +812,30 @@ function shareCur(){
   else prompt("Copia il link:",url);
 }
 
+/* backup suite completo */
+const SUITE_KEYS=["dnd5e_chars","dnd5e_draft","dnd5e_lang","dnd5e_homebrew","dnd5e_npcs","enc_src","enc_saved","enc_trk","enc_hb","dnd5e_diary","dnd5e_puzzles"];
+function backupSuite(){
+  const data={type:"dnd5e_suite_backup",ver:2,date:new Date().toISOString(),store:{}};
+  let n=0;SUITE_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null){data.store[k]=v;n++}}catch(e){}});
+  if(!n){alert("Nulla da salvare.");return}
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="dnd5e_suite_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();
+}
+function restoreSuite(file){
+  const rd=new FileReader();
+  rd.onload=()=>{try{
+    const d=JSON.parse(rd.result);
+    if(d.type!=="dnd5e_suite_backup"||!d.store||typeof d.store!=="object")throw 0;
+    const keys=Object.keys(d.store).filter(k=>SUITE_KEYS.includes(k)&&typeof d.store[k]==="string");
+    if(!keys.length)throw 0;
+    if(!confirm("Ripristinare il backup? Tutti i dati della suite in questo browser verranno sostituiti da quelli del file."))return;
+    /* sostituzione completa: le chiavi della suite assenti nel backup vengono rimosse, così non restano dati misti */
+    SUITE_KEYS.forEach(k=>{try{if(keys.includes(k))localStorage.setItem(k,safeStoreVal(k,d.store[k]));else localStorage.removeItem(k)}catch(e){}});
+    alert("✅ Backup ripristinato. La pagina verrà ricaricata.");location.reload();
+  }catch(err){alert("File di backup non valido.")}};
+  rd.readAsText(file);
+}
 /* ================= TABS / INIT ================= */
 function showTab(t){
   ["cif","run","rid","log","ser","gri","ana"].forEach(x=>{
